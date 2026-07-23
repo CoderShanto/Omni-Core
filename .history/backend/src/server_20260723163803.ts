@@ -8,7 +8,6 @@ import connectDB from "./config/db";
 import authRoutes from "./routes/auth.routes";
 import companyRoutes from "./routes/company.routes";
 import employeeRoutes from "./routes/employee.routes";
-import departmentRoutes from "./routes/department.routes";
 
 dotenv.config();
 
@@ -24,7 +23,6 @@ app.use(
   companyRoutes
 );
 app.use("/api/employees", employeeRoutes);
-app.use("/api/departments", departmentRoutes);
 
 
 // app.get("/", (req: Request, res: Response) => {
