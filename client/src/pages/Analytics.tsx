@@ -11,7 +11,7 @@ export const Analytics: React.FC = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await api.get('/analytics');
+        const res = await api.get('/company/analytics');
         setData(res.data);
       } catch (err) {
         console.error('Failed to load analytics metrics', err);

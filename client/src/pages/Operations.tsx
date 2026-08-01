@@ -66,11 +66,11 @@ export const Operations: React.FC = () => {
   const fetchData = async () => {
     try {
       const [timeRes, expRes, empRes, projRes, taskRes] = await Promise.all([
-        api.get('/time-logs'),
-        api.get('/expenses'),
-        api.get('/employees'),
-        api.get('/projects'),
-        api.get('/tasks')
+        api.get('/company/time-logs'),
+        api.get('/company/expenses'),
+        api.get('/company/employees'),
+        api.get('/company/projects'),
+        api.get('/company/tasks')
       ]);
       setTimeLogs(timeRes.data);
       setExpenses(expRes.data);
@@ -102,7 +102,7 @@ export const Operations: React.FC = () => {
   const handleCreateTimeLog = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/time-logs', {
+      await api.post('/company/time-logs', {
         employeeId: selectedEmployee,
         projectId: selectedProject || undefined,
         taskId: selectedTask || undefined,
@@ -126,7 +126,7 @@ export const Operations: React.FC = () => {
   const handleCreateExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/expenses', {
+      await api.post('/company/expenses', {
         employeeId: expEmployee,
         category: expCategory,
         amount: Number(expAmount),

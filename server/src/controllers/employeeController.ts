@@ -3,13 +3,7 @@ import Employee from '../models/Employee';
 
 export const getEmployees = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) {
-        return res.json([]);
-      }
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const employees = await Employee.find(filter).populate('userId', 'name email role').sort({ createdAt: -1 });
     return res.json(employees);
@@ -22,10 +16,7 @@ export const createEmployee = async (req: Request, res: Response) => {
   try {
     const { name, email, designation, department, salary, joinDate, userId } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) {
-      return res.status(400).json({ message: 'Company ID is required' });
-    }
+    const companyId = req.user?.companyId;
 
     if (!name || !email || !designation || !department) {
       return res.status(400).json({ message: 'Name, email, designation, and department are required' });
@@ -56,7 +47,7 @@ export const getEmployeeById = async (req: Request, res: Response) => {
 
     if (!employee) return res.status(404).json({ message: 'Employee not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== employee.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== employee.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized access to employee record' });
     }
 
@@ -73,7 +64,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
 
     if (!employee) return res.status(404).json({ message: 'Employee not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== employee.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== employee.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized modification' });
     }
 

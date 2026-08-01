@@ -3,11 +3,7 @@ import Client from '../models/Client';
 
 export const getClients = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const clients = await Client.find(filter).sort({ createdAt: -1 });
     return res.json(clients);
@@ -20,10 +16,7 @@ export const createClient = async (req: Request, res: Response) => {
   try {
     const { name, companyName, email, phone } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) {
-      return res.status(400).json({ message: 'Company ID is required' });
-    }
+    const companyId = req.user?.companyId;
 
     if (!name || !companyName || !email) {
       return res.status(400).json({ message: 'Client name, company name, and email are required' });
@@ -45,7 +38,7 @@ export const updateClient = async (req: Request, res: Response) => {
 
     if (!client) return res.status(404).json({ message: 'Client not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== client.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== client.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized client edit' });
     }
 

@@ -24,8 +24,8 @@ export const Projects: React.FC = () => {
   const fetchData = async () => {
     try {
       const [projRes, empRes] = await Promise.all([
-        api.get('/projects'),
-        api.get('/employees')
+        api.get('/company/projects'),
+        api.get('/company/employees')
       ]);
       setProjects(projRes.data);
       setEmployees(empRes.data);
@@ -43,7 +43,7 @@ export const Projects: React.FC = () => {
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/projects', {
+      await api.post('/company/projects', {
         name,
         description,
         budget: Number(budget),
@@ -66,7 +66,7 @@ export const Projects: React.FC = () => {
 
   const handleStatusChange = async (projectId: string, newStatus: ProjectStatus) => {
     try {
-      await api.put(`/projects/${projectId}`, { status: newStatus });
+      await api.put(`/company/projects/${projectId}`, { status: newStatus });
       fetchData();
     } catch (err: any) {
       alert('Error updating status');

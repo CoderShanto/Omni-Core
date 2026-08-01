@@ -13,15 +13,15 @@ export const Companies: React.FC = () => {
   // New company form state
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
-  const [address, setAddress] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [ceoName, setCeoName] = useState('');
+  const [ceoEmail, setCeoEmail] = useState('');
+  const [ceoPassword, setCeoPassword] = useState('');
 
   const { user } = useAuth();
 
   const fetchCompanies = async () => {
     try {
-      const res = await api.get('/companies');
+      const res = await api.get('/platform/companies');
       setCompanies(res.data);
     } catch (err) {
       console.error('Error fetching companies', err);
@@ -37,13 +37,19 @@ export const Companies: React.FC = () => {
   const handleCreateCompany = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/companies', { name, industry, address, email, phone });
+      await api.post('/auth/provision-tenant', { 
+        companyName: name, 
+        industry, 
+        ceoName, 
+        ceoEmail, 
+        ceoPassword 
+      });
       setIsModalOpen(false);
       setName('');
       setIndustry('');
-      setAddress('');
-      setEmail('');
-      setPhone('');
+      setCeoName('');
+      setCeoEmail('');
+      setCeoPassword('');
       fetchCompanies();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Error creating company');
@@ -124,16 +130,16 @@ export const Companies: React.FC = () => {
             <input type="text" required value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="Software Development" className="input-field" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Corporate Address</label>
-            <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="100 Silicon Way" className="input-field" />
+            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">CEO Full Name</label>
+            <input type="text" required value={ceoName} onChange={(e) => setCeoName(e.target.value)} placeholder="Jane Doe" className="input-field" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Official Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="contact@company.com" className="input-field" />
+            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">CEO Email (Login)</label>
+            <input type="email" required value={ceoEmail} onChange={(e) => setCeoEmail(e.target.value)} placeholder="ceo@company.com" className="input-field" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Phone Number</label>
-            <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="input-field" />
+            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">CEO Temporary Password</label>
+            <input type="password" required value={ceoPassword} onChange={(e) => setCeoPassword(e.target.value)} placeholder="Password123!" className="input-field" />
           </div>
 
           <div className="flex justify-end gap-2 pt-3">

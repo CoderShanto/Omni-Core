@@ -25,9 +25,9 @@ export const Tasks: React.FC = () => {
   const fetchData = async () => {
     try {
       const [taskRes, projRes, empRes] = await Promise.all([
-        api.get('/tasks'),
-        api.get('/projects'),
-        api.get('/employees')
+        api.get('/company/tasks'),
+        api.get('/company/projects'),
+        api.get('/company/employees')
       ]);
       setTasks(taskRes.data);
       setProjects(projRes.data);
@@ -46,7 +46,7 @@ export const Tasks: React.FC = () => {
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/tasks', {
+      await api.post('/company/tasks', {
         title,
         description,
         priority,

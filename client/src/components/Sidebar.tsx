@@ -20,18 +20,18 @@ export const Sidebar: React.FC = () => {
   const { user } = useAuth();
 
   const navItems = [
-    { label: 'Executive Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['Super Admin', 'CEO', 'Manager'] },
-    { label: 'AI COO Layer', path: '/ai-coo', icon: Bot, roles: ['Super Admin', 'CEO', 'Manager'], badge: 'AI' },
-    { label: 'Companies', path: '/companies', icon: Building2, roles: ['Super Admin', 'CEO'] },
-    { label: 'Employees', path: '/employees', icon: Users, roles: ['Super Admin', 'CEO', 'Manager', 'Employee'] },
-    { label: 'Projects', path: '/projects', icon: FolderKanban, roles: ['Super Admin', 'CEO', 'Manager', 'Employee'] },
-    { label: 'Tasks Kanban', path: '/tasks', icon: CheckSquare, roles: ['Super Admin', 'CEO', 'Manager', 'Employee'] },
-    { label: 'Time & Expenses', path: '/operations', icon: Clock, roles: ['Super Admin', 'CEO', 'Manager', 'Employee'] },
-    { label: 'Knowledge Notes', path: '/knowledge', icon: BookOpen, roles: ['Super Admin', 'CEO', 'Manager', 'Employee'] },
-    { label: 'Clients & Revenue', path: '/revenue', icon: DollarSign, roles: ['Super Admin', 'CEO', 'Manager'] },
-    { label: 'Analytics BI', path: '/analytics', icon: BarChart3, roles: ['Super Admin', 'CEO', 'Manager'] },
-    { label: 'SaaS Billing', path: '/billing', icon: CreditCard, roles: ['Super Admin', 'CEO'], badge: 'PRO' },
-    { label: 'Security & Audit', path: '/security-audit', icon: ShieldCheck, roles: ['Super Admin', 'CEO'] }
+    { label: 'Executive Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['CEO', 'Manager'] },
+    { label: 'AI COO Layer', path: '/ai-coo', icon: Bot, roles: ['CEO', 'Manager'], badge: 'AI' },
+    { label: 'Companies', path: '/companies', icon: Building2, roles: ['Super Admin'] },
+    { label: 'Employees', path: '/employees', icon: Users, roles: ['CEO', 'Manager', 'Employee'] },
+    { label: 'Projects', path: '/projects', icon: FolderKanban, roles: ['CEO', 'Manager', 'Employee'] },
+    { label: 'Tasks Kanban', path: '/tasks', icon: CheckSquare, roles: ['CEO', 'Manager', 'Employee'] },
+    { label: 'Time & Expenses', path: '/operations', icon: Clock, roles: ['CEO', 'Manager', 'Employee'] },
+    { label: 'Knowledge Notes', path: '/knowledge', icon: BookOpen, roles: ['CEO', 'Manager', 'Employee'] },
+    { label: 'Clients & Revenue', path: '/revenue', icon: DollarSign, roles: ['CEO', 'Manager'] },
+    { label: 'Analytics BI', path: '/analytics', icon: BarChart3, roles: ['CEO', 'Manager'] },
+    { label: 'SaaS Billing', path: '/billing', icon: CreditCard, roles: ['Super Admin'], badge: 'PRO' },
+    { label: 'Security & Audit', path: '/security-audit', icon: ShieldCheck, roles: ['Super Admin'] }
   ];
 
   const visibleItems = navItems.filter(item => user && item.roles.includes(user.role));

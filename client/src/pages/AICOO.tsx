@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { ProjectRiskReport, RevenueForecast } from '../types';
-import { Bot, Send, AlertTriangle, TrendingUp, Sparkles, ShieldAlert, CheckCircle2, HelpCircle } from 'lucide-react';
+import { Bot, Send, AlertTriangle, TrendingUp, Sparkles, ShieldAlert, CheckCircle2, HelpCircle, DollarSign, Users } from 'lucide-react';
 
 export const AICOO: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'assistant' | 'risks' | 'forecast'>('assistant');
+  const [activeTab, setActiveTab] = useState<'assistant' | 'risks' | 'forecast' | 'leaks' | 'burnout'>('assistant');
   
   // Natural query state
   const [query, setQuery] = useState('');
@@ -24,17 +24,23 @@ export const AICOO: React.FC = () => {
   // Risk reports & forecast state
   const [risks, setRisks] = useState<ProjectRiskReport[]>([]);
   const [forecast, setForecast] = useState<RevenueForecast | null>(null);
+  const [leaks, setLeaks] = useState<any>(null);
+  const [burnout, setBurnout] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAIData = async () => {
       try {
-        const [riskRes, forecastRes] = await Promise.all([
+        const [riskRes, forecastRes, leaksRes, burnoutRes] = await Promise.all([
           api.get('/ai/risk-analysis'),
-          api.get('/ai/revenue-forecast')
+          api.get('/ai/revenue-forecast'),
+          api.get('/ai/revenue-leaks'),
+          api.get('/ai/workload-burnout')
         ]);
         setRisks(riskRes.data.reports || []);
         setForecast(forecastRes.data.forecast || null);
+        setLeaks(leaksRes.data.leaks || null);
+        setBurnout(burnoutRes.data.burnoutReport || []);
       } catch (err) {
         console.error('Error loading AI COO models', err);
       } finally {
@@ -132,7 +138,31 @@ export const AICOO: React.FC = () => {
           }`}
         >
           <TrendingUp className="w-4 h-4" />
-          <span>Revenue Forecast Engine</span>
+          <span>Revenue Forecast</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('leaks')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+            activeTab === 'leaks'
+              ? 'bg-indigo-600/30 text-white border border-indigo-500/40'
+              : 'text-[var(--text-muted)] hover:text-white'
+          }`}
+        >
+          <DollarSign className="w-4 h-4" />
+          <span>Revenue Leaks</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('burnout')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+            activeTab === 'burnout'
+              ? 'bg-indigo-600/30 text-white border border-indigo-500/40'
+              : 'text-[var(--text-muted)] hover:text-white'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          <span>Workload & Burnout</span>
         </button>
       </div>
 
@@ -279,6 +309,53 @@ export const AICOO: React.FC = () => {
               <h3 className="text-2xl font-bold text-emerald-400">${forecast?.projectedQuarterRevenue.toLocaleString()}</h3>
               <p className="text-[11px] text-[var(--text-muted)]">Estimated realization rate</p>
             </div>
+          </div>
+        </div>
+      ) : activeTab === 'leaks' ? (
+        <div className="glass-panel p-6 space-y-6">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-rose-400" /> Revenue Leaks
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30">
+              <h3 className="text-sm font-bold text-rose-300">Total Overdue</h3>
+              <p className="text-2xl font-black text-white mt-2">${leaks?.totalOverdueAmount?.toLocaleString()}</p>
+            </div>
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+              <h3 className="text-sm font-bold text-amber-300">Stalled Projects</h3>
+              <p className="text-2xl font-black text-white mt-2">{leaks?.stalledProjects?.length}</p>
+            </div>
+          </div>
+          <div className="space-y-2 mt-4">
+            <h3 className="font-bold text-white text-sm">Overdue Invoices</h3>
+            {leaks?.overdueInvoices?.map((i: any) => (
+              <div key={i.id} className="p-3 bg-white/5 border border-white/10 rounded flex justify-between text-xs">
+                <span>{i.title} (Client: {i.clientName})</span>
+                <span className="text-rose-400">${i.amount} - {i.daysOverdue} days overdue</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="glass-panel p-6 space-y-6">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5 text-indigo-400" /> Workload & Burnout
+          </h2>
+          <div className="space-y-4">
+            {burnout?.map((b: any, idx: number) => (
+              <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-white">{b.employeeName}</span>
+                  <span className={`badge ${b.riskLevel === 'High' ? 'badge-rose' : 'badge-amber'}`}>{b.riskLevel} Risk</span>
+                </div>
+                <div className="text-xs text-[var(--text-muted)] flex gap-4">
+                  <span>Tasks: {b.taskCount}</span>
+                  <span>Critical: {b.criticalTasks}</span>
+                </div>
+                <p className="text-xs text-indigo-300 mt-2"><strong>AI Suggestion:</strong> {b.suggestedAction}</p>
+              </div>
+            ))}
+            {burnout?.length === 0 && <p className="text-xs text-[var(--text-muted)]">No team members are currently identified at risk of burnout.</p>}
           </div>
         </div>
       )}

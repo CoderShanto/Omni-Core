@@ -24,7 +24,7 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await api.get('/dashboard/stats');
+        const res = await api.get('/company/dashboard/stats');
         setStats(res.data);
       } catch (err) {
         console.error('Failed to load dashboard metrics', err);
@@ -52,6 +52,43 @@ export const Dashboard: React.FC = () => {
         <h1 className="text-2xl font-bold text-white tracking-tight">Executive Control Center</h1>
         <p className="text-xs text-[var(--text-muted)] mt-1">Real-time tenant performance & business analytics</p>
       </div>
+
+      {/* Business Health Score Widget */}
+      {stats?.healthScore && (
+        <div className="glass-panel p-6 bg-gradient-to-r from-indigo-900/40 to-slate-900/60 border-l-4 border-l-indigo-500">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-slate-800 border-4 border-indigo-500/30">
+                <span className="text-3xl font-black text-white">{stats.healthScore.overall}</span>
+                <span className="absolute -bottom-2 bg-indigo-600 text-xs font-bold px-2 py-0.5 rounded-full text-white">HEALTH</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Business Health Score</h2>
+                <p className="text-sm text-slate-400 max-w-md mt-1">This composite metric tracks overall operational vitality based on finance, project completion, people utilization, and operational efficiency.</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
+              <div className="bg-slate-800/50 p-3 rounded-lg text-center border border-slate-700">
+                <div className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">Finance</div>
+                <div className={`text-xl font-bold ${stats.healthScore.subScores.finance < 50 ? 'text-rose-400' : 'text-emerald-400'}`}>{stats.healthScore.subScores.finance}/100</div>
+              </div>
+              <div className="bg-slate-800/50 p-3 rounded-lg text-center border border-slate-700">
+                <div className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">Projects</div>
+                <div className={`text-xl font-bold ${stats.healthScore.subScores.project < 50 ? 'text-amber-400' : 'text-emerald-400'}`}>{stats.healthScore.subScores.project}/100</div>
+              </div>
+              <div className="bg-slate-800/50 p-3 rounded-lg text-center border border-slate-700">
+                <div className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">People</div>
+                <div className={`text-xl font-bold ${stats.healthScore.subScores.people < 50 ? 'text-rose-400' : 'text-emerald-400'}`}>{stats.healthScore.subScores.people}/100</div>
+              </div>
+              <div className="bg-slate-800/50 p-3 rounded-lg text-center border border-slate-700">
+                <div className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">Operations</div>
+                <div className={`text-xl font-bold ${stats.healthScore.subScores.operations < 50 ? 'text-amber-400' : 'text-emerald-400'}`}>{stats.healthScore.subScores.operations}/100</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cards Row (FR-6.1) */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">

@@ -184,4 +184,63 @@ export class AIService {
 
     return { answer, insights, category };
   }
+
+  static async detectRevenueLeaks(companyId: string) {
+    const filter = { companyId: new mongoose.Types.ObjectId(companyId) };
+    const revenues = await Revenue.find(filter).populate('projectId', 'name').populate('clientId', 'name companyName');
+    
+    const overdueInvoices = revenues.filter(r => r.paymentStatus === 'Overdue' || (r.paymentStatus === 'Pending' && new Date(r.dueDate) < new Date()));
+    
+    // In a real system, we'd also check stalled projects with billable work
+    const projects = await Project.find(filter);
+    const stalledProjects = projects.filter(p => p.status === 'In Progress' && new Date(p.updatedAt).getTime() < Date.now() - 14 * 24 * 60 * 60 * 1000);
+
+    return {
+      totalOverdueAmount: overdueInvoices.reduce((sum, r) => sum + r.amount, 0),
+      overdueInvoices: overdueInvoices.map(r => ({
+        id: r._id,
+        title: r.title,
+        amount: r.amount,
+        dueDate: r.dueDate,
+        daysOverdue: Math.floor((Date.now() - new Date(r.dueDate).getTime()) / (1000 * 3600 * 24)),
+        clientName: (r.clientId as any)?.name || 'Unknown Client'
+      })),
+      stalledProjects: stalledProjects.map(p => ({
+        id: p._id,
+        name: p.name,
+        budget: p.budget,
+        daysStalled: Math.floor((Date.now() - new Date(p.updatedAt).getTime()) / (1000 * 3600 * 24))
+      }))
+    };
+  }
+
+  static async detectBurnout(companyId: string) {
+    const filter = { companyId: new mongoose.Types.ObjectId(companyId) };
+    const employees = await Employee.find(filter);
+    const tasks = await Task.find({ ...filter, status: { $ne: 'Done' } });
+
+    const workloadMap = new Map<string, { employeeName: string, taskCount: number, criticalTasks: number }>();
+    employees.forEach(e => workloadMap.set(e._id.toString(), { employeeName: e.name, taskCount: 0, criticalTasks: 0 }));
+
+    tasks.forEach(t => {
+      if (t.assignedTo && workloadMap.has(t.assignedTo.toString())) {
+        const emp = workloadMap.get(t.assignedTo.toString())!;
+        emp.taskCount++;
+        if (t.priority === 'Critical' || t.priority === 'High') {
+          emp.criticalTasks++;
+        }
+      }
+    });
+
+    const atRiskEmployees = Array.from(workloadMap.values())
+      .filter(w => w.taskCount >= 6 || w.criticalTasks >= 3)
+      .map(w => ({
+        ...w,
+        riskLevel: w.taskCount >= 10 || w.criticalTasks >= 5 ? 'High' : 'Medium',
+        suggestedAction: `Reassign ${Math.max(1, Math.floor(w.taskCount * 0.3))} tasks to underutilized team members.`
+      }));
+
+    return atRiskEmployees.sort((a, b) => b.taskCount - a.taskCount);
+  }
 }
+

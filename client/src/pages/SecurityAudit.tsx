@@ -30,7 +30,7 @@ export const SecurityAudit: React.FC = () => {
 
   const fetchAuditLogs = async () => {
     try {
-      const res = await api.get('/audit-logs');
+      const res = await api.get('/platform/audit-logs');
       setLogs(res.data);
     } catch (err) {
       console.error('Error fetching security audit logs', err);

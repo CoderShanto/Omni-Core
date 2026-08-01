@@ -32,9 +32,9 @@ export const Knowledge: React.FC = () => {
   const fetchData = async () => {
     try {
       const [notesRes, meetingsRes, projRes] = await Promise.all([
-        api.get('/notes'),
-        api.get('/meetings'),
-        api.get('/projects')
+        api.get('/company/notes'),
+        api.get('/company/meetings'),
+        api.get('/company/projects')
       ]);
       setNotes(notesRes.data);
       setMeetings(meetingsRes.data);
@@ -54,7 +54,7 @@ export const Knowledge: React.FC = () => {
     e.preventDefault();
     try {
       const tagsArray = noteTags.split(',').map(t => t.trim()).filter(Boolean);
-      await api.post('/notes', { title: noteTitle, content: noteContent, tags: tagsArray });
+      await api.post('/company/notes', { title: noteTitle, content: noteContent, tags: tagsArray });
       setIsNoteModalOpen(false);
       setNoteTitle('');
       setNoteContent('');
@@ -74,7 +74,7 @@ export const Knowledge: React.FC = () => {
         .filter(Boolean)
         .map(task => ({ task, completed: false }));
 
-      await api.post('/meetings', {
+      await api.post('/company/meetings', {
         title: meetingTitle,
         summary: meetingSummary,
         projectId: meetingProjectId || undefined,

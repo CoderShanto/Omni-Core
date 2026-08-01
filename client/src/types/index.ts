@@ -115,6 +115,15 @@ export interface Revenue {
 }
 
 export interface DashboardStats {
+  healthScore?: {
+    overall: number;
+    subScores: {
+      finance: number;
+      project: number;
+      people: number;
+      operations: number;
+    };
+  };
   cards: {
     totalEmployees: number;
     totalProjects: number;

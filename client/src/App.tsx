@@ -20,6 +20,14 @@ import { Billing } from './pages/Billing';
 import { Operations } from './pages/Operations';
 import { SecurityAudit } from './pages/SecurityAudit';
 
+import { useAuth } from './context/AuthContext';
+
+const RoleBasedRedirect: React.FC = () => {
+  const { user } = useAuth();
+  if (user?.role === 'Super Admin') return <Navigate to="/companies" replace />;
+  return <Navigate to="/dashboard" replace />;
+};
+
 const AppLayout: React.FC = () => {
   return (
     <div className="app-container">
@@ -46,6 +54,7 @@ export const App: React.FC = () => {
           {/* Protected Application Routes */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
+              <Route path="/" element={<RoleBasedRedirect />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/ai-coo" element={<AICOO />} />
               <Route path="/companies" element={<Companies />} />
@@ -58,7 +67,7 @@ export const App: React.FC = () => {
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/billing" element={<Billing />} />
               <Route path="/security-audit" element={<SecurityAudit />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<RoleBasedRedirect />} />
             </Route>
           </Route>
         </Routes>

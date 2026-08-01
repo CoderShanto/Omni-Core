@@ -3,9 +3,13 @@ import { getAnalyticsMetrics } from '../controllers/analyticsController';
 import { authenticateToken } from '../middlewares/authMiddleware';
 import { requireRole } from '../middlewares/roleMiddleware';
 
+import { requireTenantMember } from '../middlewares/tenantMiddleware';
+
 const router = Router();
 
 router.use(authenticateToken);
-router.get('/', requireRole(['Super Admin', 'CEO', 'Manager']), getAnalyticsMetrics);
+router.use(requireTenantMember);
+
+router.get('/', requireRole(['CEO', 'Manager']), getAnalyticsMetrics);
 
 export default router;

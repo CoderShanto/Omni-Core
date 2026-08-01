@@ -3,11 +3,7 @@ import Expense, { ExpenseStatus } from '../models/Expense';
 
 export const getExpenses = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const expenses = await Expense.find(filter)
       .populate('employeeId', 'name designation department')
@@ -24,8 +20,7 @@ export const createExpense = async (req: Request, res: Response) => {
   try {
     const { employeeId, category, amount, description, receiptUrl } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) return res.status(400).json({ message: 'Company ID is required' });
+    const companyId = req.user?.companyId;
 
     if (!employeeId || !amount || !description) {
       return res.status(400).json({ message: 'Employee ID, amount, and description are required' });
@@ -60,7 +55,7 @@ export const updateExpenseStatus = async (req: Request, res: Response) => {
     const expense = await Expense.findById(id);
     if (!expense) return res.status(404).json({ message: 'Expense record not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== expense.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== expense.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized action' });
     }
 

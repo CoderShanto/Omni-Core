@@ -29,7 +29,7 @@ export const Billing: React.FC = () => {
 
   const fetchBilling = async () => {
     try {
-      const res = await api.get('/billing');
+      const res = await api.get('/platform/billing');
       setSubData(res.data);
     } catch (err) {
       console.error('Error loading billing info', err);
@@ -46,7 +46,7 @@ export const Billing: React.FC = () => {
     setUpgrading(true);
     setMessage('');
     try {
-      const res = await api.post('/billing/upgrade', { plan: planTier });
+      const res = await api.post('/platform/billing/upgrade', { plan: planTier });
       setMessage(res.data.message);
       fetchBilling();
     } catch (err: any) {

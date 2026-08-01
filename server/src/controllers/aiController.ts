@@ -46,3 +46,24 @@ export const askAI = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Error processing AI query', error: (error as Error).message });
   }
 };
+export const getRevenueLeaks = async (req: Request, res: Response) => {
+  try {
+    const companyId = req.user?.companyId;
+    if (!companyId) return res.status(400).json({ message: 'Company ID required' });
+    const leaks = await AIService.detectRevenueLeaks(companyId.toString());
+    return res.json({ leaks });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error analyzing revenue leaks', error: (error as Error).message });
+  }
+};
+
+export const getWorkloadBurnout = async (req: Request, res: Response) => {
+  try {
+    const companyId = req.user?.companyId;
+    if (!companyId) return res.status(400).json({ message: 'Company ID required' });
+    const burnoutReport = await AIService.detectBurnout(companyId.toString());
+    return res.json({ burnoutReport });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error analyzing workload burnout', error: (error as Error).message });
+  }
+};

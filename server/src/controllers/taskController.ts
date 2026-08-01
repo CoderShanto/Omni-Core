@@ -3,11 +3,7 @@ import Task from '../models/Task';
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const { projectId } = req.query;
     if (projectId) {
@@ -30,10 +26,7 @@ export const createTask = async (req: Request, res: Response) => {
   try {
     const { title, description, priority, deadline, projectId, assignedTo, status } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) {
-      return res.status(400).json({ message: 'Company ID is required' });
-    }
+    const companyId = req.user?.companyId;
 
     if (!title || !deadline) {
       return res.status(400).json({ message: 'Task title and deadline are required' });
@@ -65,7 +58,7 @@ export const updateTask = async (req: Request, res: Response) => {
 
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== task.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== task.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized task modification' });
     }
 
@@ -92,7 +85,7 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
     const task = await Task.findById(id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== task.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== task.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized access' });
     }
 
@@ -102,5 +95,33 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
     return res.json(task);
   } catch (error) {
     return res.status(500).json({ message: 'Error updating task status', error: (error as Error).message });
+  }
+};
+
+export const checkTaskDeadlines = async (req: Request, res: Response) => {
+  try {
+    const companyId = req.user?.companyId;
+    
+    // Find tasks that are not done and deadline is approaching within 48 hours or already missed
+    const now = new Date();
+    const threshold = new Date(now.getTime() + 48 * 60 * 60 * 1000); // 48 hours from now
+
+    const atRiskTasks = await Task.find({
+      companyId,
+      status: { $ne: 'Done' },
+      deadline: { $lte: threshold }
+    })
+      .populate('assignedTo', 'name email')
+      .populate('projectId', 'name');
+
+    // In a real system, here we would trigger notificationService.notify(...)
+    // For MVP we just return the identified tasks
+    
+    return res.json({
+      message: `Found ${atRiskTasks.length} tasks at risk or overdue.`,
+      atRiskTasks
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error checking task deadlines', error: (error as Error).message });
   }
 };

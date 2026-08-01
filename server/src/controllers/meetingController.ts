@@ -3,11 +3,7 @@ import Meeting from '../models/Meeting';
 
 export const getMeetings = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const { projectId } = req.query;
     if (projectId) filter.projectId = projectId;
@@ -27,10 +23,7 @@ export const createMeeting = async (req: Request, res: Response) => {
   try {
     const { title, summary, actionItems, projectId } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) {
-      return res.status(400).json({ message: 'Company ID is required' });
-    }
+    const companyId = req.user?.companyId;
 
     if (!title || !summary) {
       return res.status(400).json({ message: 'Meeting title and summary are required' });
@@ -59,7 +52,7 @@ export const toggleActionItem = async (req: Request, res: Response) => {
 
     if (!meeting) return res.status(404).json({ message: 'Meeting record not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== meeting.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== meeting.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
 

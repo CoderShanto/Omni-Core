@@ -23,7 +23,7 @@ export const Employees: React.FC = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await api.get('/employees');
+      const res = await api.get('/company/employees');
       setEmployees(res.data);
     } catch (err) {
       console.error('Error fetching employee roster', err);
@@ -39,7 +39,7 @@ export const Employees: React.FC = () => {
   const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/employees', {
+      await api.post('/company/employees', {
         name,
         email,
         designation,

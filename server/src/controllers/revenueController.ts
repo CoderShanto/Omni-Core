@@ -3,11 +3,7 @@ import Revenue from '../models/Revenue';
 
 export const getRevenues = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const revenues = await Revenue.find(filter)
       .populate('projectId', 'name status')
@@ -24,10 +20,7 @@ export const createRevenue = async (req: Request, res: Response) => {
   try {
     const { title, amount, paymentStatus, dueDate, projectId, clientId, paidDate } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) {
-      return res.status(400).json({ message: 'Company ID is required' });
-    }
+    const companyId = req.user?.companyId;
 
     if (!title || amount === undefined || !dueDate) {
       return res.status(400).json({ message: 'Title, amount, and due date are required' });
@@ -59,7 +52,7 @@ export const updateRevenueStatus = async (req: Request, res: Response) => {
     const revenue = await Revenue.findById(id);
     if (!revenue) return res.status(404).json({ message: 'Revenue entry not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== revenue.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== revenue.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized modification' });
     }
 

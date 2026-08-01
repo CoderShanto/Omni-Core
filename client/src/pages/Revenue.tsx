@@ -35,9 +35,9 @@ export const RevenuePage: React.FC = () => {
   const fetchData = async () => {
     try {
       const [revRes, clientRes, projRes] = await Promise.all([
-        api.get('/revenues'),
-        api.get('/clients'),
-        api.get('/projects')
+        api.get('/company/revenues'),
+        api.get('/company/clients'),
+        api.get('/company/projects')
       ]);
       setRevenues(revRes.data);
       setClients(clientRes.data);
@@ -56,7 +56,7 @@ export const RevenuePage: React.FC = () => {
   const handleCreateRevenue = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/revenues', {
+      await api.post('/company/revenues', {
         title,
         amount: Number(amount),
         paymentStatus,
@@ -80,7 +80,7 @@ export const RevenuePage: React.FC = () => {
   const handleCreateClient = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/clients', {
+      await api.post('/company/clients', {
         name: clientName,
         companyName: clientCompany,
         email: clientEmail,

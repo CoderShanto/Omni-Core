@@ -3,12 +3,15 @@ import { getRevenues, createRevenue, updateRevenueStatus } from '../controllers/
 import { authenticateToken } from '../middlewares/authMiddleware';
 import { requireRole } from '../middlewares/roleMiddleware';
 
+import { requireTenantMember } from '../middlewares/tenantMiddleware';
+
 const router = Router();
 
 router.use(authenticateToken);
+router.use(requireTenantMember);
 
-router.get('/', requireRole(['Super Admin', 'CEO', 'Manager']), getRevenues);
-router.post('/', requireRole(['Super Admin', 'CEO']), createRevenue);
-router.patch('/:id/status', requireRole(['Super Admin', 'CEO']), updateRevenueStatus);
+router.get('/', requireRole(['CEO', 'Manager']), getRevenues);
+router.post('/', requireRole(['CEO']), createRevenue);
+router.patch('/:id/status', requireRole(['CEO']), updateRevenueStatus);
 
 export default router;

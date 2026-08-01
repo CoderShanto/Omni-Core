@@ -4,11 +4,7 @@ import Employee from '../models/Employee';
 
 export const getTimeLogs = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const logs = await TimeLog.find(filter)
       .populate('employeeId', 'name designation department')
@@ -26,8 +22,7 @@ export const createTimeLog = async (req: Request, res: Response) => {
   try {
     const { employeeId, taskId, projectId, durationMinutes, isBillable, hourlyRate, notes, date } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) return res.status(400).json({ message: 'Company ID is required' });
+    const companyId = req.user?.companyId;
 
     if (!employeeId || durationMinutes === undefined) {
       return res.status(400).json({ message: 'Employee ID and duration are required' });

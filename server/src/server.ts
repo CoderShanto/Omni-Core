@@ -5,6 +5,7 @@ import { connectDB } from './config/db';
 
 import authRoutes from './routes/authRoutes';
 import companyRoutes from './routes/companyRoutes';
+import tenantCompanyRoutes from './routes/tenantCompanyRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import projectRoutes from './routes/projectRoutes';
 import taskRoutes from './routes/taskRoutes';
@@ -39,21 +40,22 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/companies', companyRoutes);
-app.use('/api/employees', employeeRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/notes', noteRoutes);
-app.use('/api/meetings', meetingRoutes);
-app.use('/api/clients', clientRoutes);
-app.use('/api/revenues', revenueRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/analytics', analyticsRoutes);
+app.use('/api/platform/companies', companyRoutes); // Super admin only
+app.use('/api/platform/billing', billingRoutes); // Super admin only
+app.use('/api/company', tenantCompanyRoutes);
+app.use('/api/company/employees', employeeRoutes);
+app.use('/api/company/projects', projectRoutes);
+app.use('/api/company/tasks', taskRoutes);
+app.use('/api/company/notes', noteRoutes);
+app.use('/api/company/meetings', meetingRoutes);
+app.use('/api/company/clients', clientRoutes);
+app.use('/api/company/revenues', revenueRoutes);
+app.use('/api/company/expenses', expenseRoutes);
+app.use('/api/company/time-logs', timeLogRoutes);
+app.use('/api/company/dashboard', dashboardRoutes);
+app.use('/api/company/analytics', analyticsRoutes);
+app.use('/api/platform/audit-logs', auditLogRoutes); // Assuming Super admin views all audit logs or this needs company scoping too
 app.use('/api/ai', aiRoutes);
-app.use('/api/billing', billingRoutes);
-app.use('/api/time-logs', timeLogRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/audit-logs', auditLogRoutes);
 
 // Error Handler
 app.use(errorHandler);

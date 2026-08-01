@@ -3,11 +3,7 @@ import Project from '../models/Project';
 
 export const getProjects = async (req: Request, res: Response) => {
   try {
-    const filter: any = {};
-    if (req.user?.role !== 'Super Admin') {
-      if (!req.user?.companyId) return res.json([]);
-      filter.companyId = req.user.companyId;
-    }
+    const filter: any = { companyId: req.user?.companyId };
 
     const projects = await Project.find(filter)
       .populate('team', 'name email designation department')
@@ -24,10 +20,7 @@ export const createProject = async (req: Request, res: Response) => {
   try {
     const { name, description, budget, deadline, team, status } = req.body;
 
-    const companyId = req.user?.role === 'Super Admin' ? req.body.companyId : req.user?.companyId;
-    if (!companyId) {
-      return res.status(400).json({ message: 'Company ID is required' });
-    }
+    const companyId = req.user?.companyId;
 
     if (!name || !deadline) {
       return res.status(400).json({ message: 'Project name and deadline are required' });
@@ -60,7 +53,7 @@ export const getProjectById = async (req: Request, res: Response) => {
 
     if (!project) return res.status(404).json({ message: 'Project not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== project.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== project.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized access to project' });
     }
 
@@ -77,7 +70,7 @@ export const updateProject = async (req: Request, res: Response) => {
 
     if (!project) return res.status(404).json({ message: 'Project not found' });
 
-    if (req.user?.role !== 'Super Admin' && req.user?.companyId?.toString() !== project.companyId.toString()) {
+    if (req.user?.companyId?.toString() !== project.companyId.toString()) {
       return res.status(403).json({ message: 'Unauthorized modification' });
     }
 
