@@ -13,7 +13,6 @@ import Positions from "../pages/Positions";
 import Employees from "../pages/Employees";
 import Teams from "../pages/Teams";
 import Login from "../pages/Login";
-import Register from "../pages/Register";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -28,11 +27,6 @@ const AppRoutes = () => {
           element={<Login />}
         />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-
         {/* Protected */}
         <Route
           path="/"
@@ -42,10 +36,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route
-            index
-            element={<Dashboard />}
-          />
+          <Route index element={<Dashboard />} />
 
           <Route
             path="companies"

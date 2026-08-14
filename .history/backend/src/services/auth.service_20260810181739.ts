@@ -1,12 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
 import User from "../models/User";
 import { IUser } from "../interfaces/user.interface";
 
-export const registerUserIntoDB = async (
-  payload: IUser
-) => {
+export const registerUserIntoDB = async (payload: IUser) => {
   const existingUser = await User.findOne({
     email: payload.email,
   });
@@ -15,35 +12,9 @@ export const registerUserIntoDB = async (
     throw new Error("Email already exists");
   }
 
-  if (
-    payload.role !== "super_admin" &&
-    !payload.companyId
-  ) {
-    throw new Error(
-      "Company is required for this user"
-    );
-  }
-
-  const limitedRoles = [
-    "ceo",
-    "manager",
-    "team_lead",
-  ];
-
-  if (
-    payload.companyId &&
-    limitedRoles.includes(payload.role || "")
-  ) {
-    const existingRole = await User.findOne({
-      companyId: payload.companyId,
-      role: payload.role,
-    });
-
-    if (existingRole) {
-      throw new Error(
-        `This company already has a ${payload.role}`
-      );
-    }
+  // Super admin does not need a company
+  if (payload.role !== "super_admin" && !payload.companyId) {
+    throw new Error("Company is required for this role");
   }
 
   const hashedPassword = await bcrypt.hash(
@@ -69,11 +40,10 @@ export const loginUserFromDB = async (
     throw new Error("User not found");
   }
 
-  const isPasswordMatched =
-    await bcrypt.compare(
-      password,
-      user.password
-    );
+  const isPasswordMatched = await bcrypt.compare(
+    password,
+    user.password
+  );
 
   if (!isPasswordMatched) {
     throw new Error("Wrong Password");
@@ -97,8 +67,9 @@ export const loginUserFromDB = async (
   };
 };
 
-export const getMeFromDB = async (
-  userId: string
-) => {
-  return await User.findById(userId);
+export const getMeFromDB = async (userId: string) => {
+  return await User.findById(userId).populate(
+    "companyId",
+    "name email industry"
+  );
 };

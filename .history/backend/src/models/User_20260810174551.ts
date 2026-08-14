@@ -1,18 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
-const companySchema = new Schema(
+const userSchema = new Schema(
   {
     name: {
-      type: String,
-      required: true,
-    },
-
-    industry: {
-      type: String,
-      required: true,
-    },
-
-    address: {
       type: String,
       required: true,
     },
@@ -23,14 +13,20 @@ const companySchema = new Schema(
       unique: true,
     },
 
-    phone: {
+    password: {
       type: String,
       required: true,
     },
 
-    owner: {
+    role: {
+      type: String,
+      enum: ["super_admin", "ceo", "manager", "employee"],
+      default: "employee",
+    },
+
+    company: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Company",
       required: false,
     },
   },
@@ -39,9 +35,6 @@ const companySchema = new Schema(
   }
 );
 
-const Company = mongoose.model(
-  "Company",
-  companySchema
-);
+const User = mongoose.model("User", userSchema);
 
-export default Company;
+export default User;

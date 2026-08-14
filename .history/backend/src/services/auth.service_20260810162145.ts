@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
 import User from "../models/User";
 import { IUser } from "../interfaces/user.interface";
+import jwt from "jsonwebtoken";
 
 export const registerUserIntoDB = async (
   payload: IUser
@@ -13,37 +12,6 @@ export const registerUserIntoDB = async (
 
   if (existingUser) {
     throw new Error("Email already exists");
-  }
-
-  if (
-    payload.role !== "super_admin" &&
-    !payload.companyId
-  ) {
-    throw new Error(
-      "Company is required for this user"
-    );
-  }
-
-  const limitedRoles = [
-    "ceo",
-    "manager",
-    "team_lead",
-  ];
-
-  if (
-    payload.companyId &&
-    limitedRoles.includes(payload.role || "")
-  ) {
-    const existingRole = await User.findOne({
-      companyId: payload.companyId,
-      role: payload.role,
-    });
-
-    if (existingRole) {
-      throw new Error(
-        `This company already has a ${payload.role}`
-      );
-    }
   }
 
   const hashedPassword = await bcrypt.hash(
@@ -83,7 +51,6 @@ export const loginUserFromDB = async (
     {
       userId: user._id,
       role: user.role,
-      companyId: user.companyId,
     },
     process.env.JWT_SECRET as string,
     {

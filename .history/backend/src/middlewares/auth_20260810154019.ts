@@ -1,9 +1,4 @@
-import {
-  NextFunction,
-  Request,
-  Response,
-} from "express";
-
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 export const auth = (
@@ -32,16 +27,7 @@ export const auth = (
 
     req.user = decoded as {
       userId: string;
-
-      role:
-        | "super_admin"
-        | "ceo"
-        | "manager"
-        | "team_lead"
-        | "employee"
-        | "client";
-
-      companyId?: string;
+      role: string;
     };
 
     next();

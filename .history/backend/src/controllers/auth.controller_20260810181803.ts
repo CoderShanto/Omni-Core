@@ -11,9 +11,7 @@ export const registerUser = async (
   res: Response
 ) => {
   try {
-    const result = await registerUserIntoDB(
-      req.body
-    );
+    const result = await registerUserIntoDB(req.body);
 
     res.status(201).json({
       success: true,
@@ -23,8 +21,7 @@ export const registerUser = async (
   } catch (error: any) {
     res.status(400).json({
       success: false,
-      message:
-        error.message || "Registration failed",
+      message: error.message || "Registration failed",
     });
   }
 };
@@ -48,8 +45,7 @@ export const loginUser = async (
   } catch (error: any) {
     res.status(401).json({
       success: false,
-      message:
-        error.message || "Login failed",
+      message: error.message || "Login failed",
     });
   }
 };
@@ -67,7 +63,7 @@ export const getMe = async (
       success: true,
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to get user",

@@ -15,6 +15,7 @@ export const registerUserIntoDB = async (
     throw new Error("Email already exists");
   }
 
+  // Super admin does not belong to a company
   if (
     payload.role !== "super_admin" &&
     !payload.companyId
@@ -24,6 +25,7 @@ export const registerUserIntoDB = async (
     );
   }
 
+  // Only these roles are limited to one per company
   const limitedRoles = [
     "ceo",
     "manager",

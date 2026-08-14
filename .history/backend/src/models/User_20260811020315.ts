@@ -5,15 +5,12 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
     },
 
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
-      trim: true,
     },
 
     password: {
@@ -23,7 +20,6 @@ const userSchema = new Schema(
 
     role: {
       type: String,
-
       enum: [
         "super_admin",
         "ceo",
@@ -32,43 +28,25 @@ const userSchema = new Schema(
         "employee",
         "client",
       ],
-
       default: "employee",
     },
 
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
-      required: function (this: any) {
-        return this.role !== "super_admin";
-      },
+      default: null,
     },
 
     jobTitle: {
       type: String,
-
-      enum: [
-        "project_manager",
-        "tech_lead",
-        "software_developer",
-        "qa_engineer",
-        "ui_ux_designer",
-        "business_analyst",
-        "devops_engineer",
-        "sales_business_development",
-        "other",
-      ],
-
       default: null,
     },
 
     customJobTitle: {
       type: String,
-      trim: true,
       default: null,
     },
   },
-
   {
     timestamps: true,
   }

@@ -24,28 +24,6 @@ export const registerUserIntoDB = async (
     );
   }
 
-  const limitedRoles = [
-    "ceo",
-    "manager",
-    "team_lead",
-  ];
-
-  if (
-    payload.companyId &&
-    limitedRoles.includes(payload.role || "")
-  ) {
-    const existingRole = await User.findOne({
-      companyId: payload.companyId,
-      role: payload.role,
-    });
-
-    if (existingRole) {
-      throw new Error(
-        `This company already has a ${payload.role}`
-      );
-    }
-  }
-
   const hashedPassword = await bcrypt.hash(
     payload.password,
     10
