@@ -8,35 +8,35 @@ import {
 } from "../controllers/company.controller";
 
 import { auth } from "../middlewares/auth";
-import { authorizeRoles } from "../middlewares/role.middleware";
+import { allowRoles } from "../middlewares/role.middleware";
 
 const router = Router();
 
 router.get(
   "/",
   auth,
-  authorizeRoles("super_admin"),
+  allowRoles("super_admin"),
   getAllCompanies
 );
 
 router.post(
   "/",
   auth,
-  authorizeRoles("super_admin"),
+  allowRoles("super_admin"),
   createCompany
 );
 
 router.put(
   "/:id",
   auth,
-  authorizeRoles("super_admin"),
+  allowRoles("super_admin"),
   updateCompany
 );
 
 router.delete(
   "/:id",
   auth,
-  authorizeRoles("super_admin"),
+  allowRoles("super_admin"),
   deleteCompany
 );
 

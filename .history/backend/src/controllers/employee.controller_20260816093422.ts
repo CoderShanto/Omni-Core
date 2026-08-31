@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
 import {
-  createPositionIntoDB,
-  getAllPositionsFromDB,
-} from "../services/position.service";
+  createEmployeeIntoDB,
+  getAllEmployeesFromDB,
+} from "../services/employee.service";
 
-export const createPosition = async (
+export const createEmployee = async (
   req: Request,
   res: Response
 ) => {
@@ -17,27 +17,25 @@ export const createPosition = async (
       });
     }
 
-    const result =
-      await createPositionIntoDB(
-        req.body,
-        req.user.companyId
-      );
+    const result = await createEmployeeIntoDB(
+      req.body,
+      req.user.companyId
+    );
 
     res.status(201).json({
       success: true,
       data: result,
     });
   } catch (error: any) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message:
-        error.message ||
-        "Failed to create position",
+        error.message || "Failed to create employee",
     });
   }
 };
 
-export const getAllPositions = async (
+export const getAllEmployees = async (
   req: Request,
   res: Response
 ) => {
@@ -49,10 +47,9 @@ export const getAllPositions = async (
       });
     }
 
-    const result =
-      await getAllPositionsFromDB(
-        req.user.companyId
-      );
+    const result = await getAllEmployeesFromDB(
+      req.user.companyId
+    );
 
     res.status(200).json({
       success: true,
@@ -62,8 +59,7 @@ export const getAllPositions = async (
     res.status(500).json({
       success: false,
       message:
-        error.message ||
-        "Failed to fetch positions",
+        error.message || "Failed to fetch employees",
     });
   }
 };

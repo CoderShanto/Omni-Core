@@ -60,15 +60,33 @@ export const updateUserIntoDB = async (
   }>,
   companyId?: string
 ) => {
-  // Temporarily use findByIdAndUpdate to ensure role updates succeed during testing
-  return await User.findByIdAndUpdate(
-    id,
+  // Super Admin can update any user.
+  if (!companyId) {
+    return await User.findByIdAndUpdate(
+      id,
+      payload,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }
+
+  // Company user can ONLY update a user
+  // from the same company.
+  const updatedUser = await User.findOneAndUpdate(
+    {
+      _id: id,
+      companyId: companyId,
+    },
     { $set: payload },
     {
       new: true,
       runValidators: true,
     }
   );
+
+  return updatedUser;
 };
 
 export const deleteUserFromDB = async (
